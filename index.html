@@ -347,8 +347,9 @@ h1,h2{font-family:'Plus Jakarta Sans','Be Vietnam Pro',sans-serif}
         <label for="email">Email</label>
         <input id="email" name="email" type="email" placeholder="Ví dụ: ban@email.com">
         <button class="btn" type="submit" style="width:100%;margin-top:18px">Tôi muốn giữ 1 suất →</button>
-        <div class="success" id="success">✅ Đã ghi nhận! Bấm “Gửi email đăng ký” bên dưới để gửi thông tin cho Hoàng Hường, hoặc nhắn Zalo 0369188408 để được xác nhận nhanh nhất.</div>
-        <div style="margin-top:12px"><a id="mailtoLink" class="btn light" style="display:none;width:100%" href="#">Gửi email đăng ký →</a></div>
+        <div class="success" id="success">✅ Đã gửi thành công! Thông tin của bạn đã được gửi về email hoanghuong9192@gmail.com. Hoàng Hường sẽ liên hệ xác nhận qua Zalo / điện thoại.</div>
+        <div class="success" id="errorBox" style="display:none;background:#FDECEC;border-color:#F5C2C2;color:#7A1F1F">⚠️ Gửi tự động chưa được — bấm nút “Gửi bằng email của bạn” bên dưới, hoặc nhắn Zalo 0369188408 để giữ suất ngay.</div>
+        <div style="margin-top:12px"><a id="mailtoLink" class="btn light" style="display:none;width:100%" href="#">Gửi bằng email của bạn →</a></div>
         <p class="note">Bằng việc đăng ký, bạn đồng ý để Hoàng Hường liên hệ xác nhận qua điện thoại / Zalo / email bạn đã cung cấp.</p>
       </form>
       <div class="contact-box">
@@ -383,19 +384,40 @@ h1,h2{font-family:'Plus Jakarta Sans','Be Vietnam Pro',sans-serif}
 <div class="sticky"><a class="btn" href="#dang-ky">Giữ 1 trong 7 suất — Miễn phí quà 125.970.000đ →</a></div>
 
 <script>
-document.getElementById('regForm').addEventListener('submit', function(e){
+document.getElementById('regForm').addEventListener('submit', async function(e){
   e.preventDefault();
   var name=document.getElementById('name').value.trim();
   var phone=document.getElementById('phone').value.trim();
   var email=document.getElementById('email').value.trim();
   if(!name||!phone){alert('Vui lòng nhập họ tên và số điện thoại.');return;}
-  var subject=encodeURIComponent('Đăng ký Thử thách 2 ngày Affiliate — '+name);
-  var body=encodeURIComponent('Họ và tên: '+name+'\nSố điện thoại / Zalo: '+phone+'\nEmail: '+email+'\n\nTôi muốn giữ 1 trong 7 suất Thử thách 2 ngày Affiliate của Hoàng Hường.');
-  var link=document.getElementById('mailtoLink');
-  link.href='mailto:hoanghuong9192@gmail.com?subject='+subject+'&body='+body;
-  link.style.display='inline-flex';
-  document.getElementById('success').style.display='block';
-  link.scrollIntoView({behavior:'smooth',block:'center'});
+  var btn=this.querySelector('button[type="submit"]');
+  var oldText=btn.textContent; btn.disabled=true; btn.textContent='Đang gửi...';
+  document.getElementById('errorBox').style.display='none';
+  try{
+    var res=await fetch('https://formsubmit.co/ajax/hoanghuong9192@gmail.com',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({name:name,phone:phone,email:email,_subject:'Đăng ký Thử thách 2 ngày Affiliate — '+name,_template:'table',_captcha:'false'})
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    document.getElementById('success').style.display='block';
+    document.getElementById('mailtoLink').style.display='none';
+    document.getElementById('success').scrollIntoView({behavior:'smooth',block:'center'});
+  }catch(err){
+    var subject=encodeURIComponent('Đăng ký Thử thách 2 ngày Affiliate — '+name);
+    var body=encodeURIComponent('Họ và tên: '+name+'
+Số điện thoại / Zalo: '+phone+'
+Email: '+email+'
+
+Tôi muốn giữ 1 trong 7 suất Thử thách 2 ngày Affiliate của Hoàng Hường.');
+    var link=document.getElementById('mailtoLink');
+    link.href='mailto:hoanghuong9192@gmail.com?subject='+subject+'&body='+body;
+    link.style.display='inline-flex';
+    document.getElementById('errorBox').style.display='block';
+    document.getElementById('errorBox').scrollIntoView({behavior:'smooth',block:'center'});
+  }finally{
+    btn.disabled=false; btn.textContent=oldText;
+  }
 });
 
 // 3D tilt + scroll reveal

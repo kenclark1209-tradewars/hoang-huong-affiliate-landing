@@ -399,7 +399,8 @@ document.getElementById('regForm').addEventListener('submit', async function(e){
       headers:{'Content-Type':'application/json','Accept':'application/json'},
       body:JSON.stringify({name:name,phone:phone,email:email,_subject:'Đăng ký Thử thách 2 ngày Affiliate — '+name,_template:'table',_captcha:'false'})
     });
-    if(!res.ok) throw new Error('HTTP '+res.status);
+    var data={}; try{ data=await res.json(); }catch(_){ data={}; }
+    if(!res.ok || (data.success!==undefined && data.success!=='true' && data.success!==true)) throw new Error((data&&data.message)||('HTTP '+res.status));
     document.getElementById('success').style.display='block';
     document.getElementById('mailtoLink').style.display='none';
     document.getElementById('success').scrollIntoView({behavior:'smooth',block:'center'});

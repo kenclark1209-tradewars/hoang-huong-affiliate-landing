@@ -405,11 +405,7 @@ document.getElementById('regForm').addEventListener('submit', async function(e){
     document.getElementById('success').scrollIntoView({behavior:'smooth',block:'center'});
   }catch(err){
     var subject=encodeURIComponent('Đăng ký Thử thách 2 ngày Affiliate — '+name);
-    var body=encodeURIComponent('Họ và tên: '+name+'
-Số điện thoại / Zalo: '+phone+'
-Email: '+email+'
-
-Tôi muốn giữ 1 trong 7 suất Thử thách 2 ngày Affiliate của Hoàng Hường.');
+    var body=encodeURIComponent('Họ và tên: '+name+'\nSố điện thoại / Zalo: '+phone+'\nEmail: '+email+'\n\nTôi muốn giữ 1 trong 7 suất Thử thách 2 ngày Affiliate của Hoàng Hường.');
     var link=document.getElementById('mailtoLink');
     link.href='mailto:hoanghuong9192@gmail.com?subject='+subject+'&body='+body;
     link.style.display='inline-flex';
